@@ -15,14 +15,14 @@ mkdir -p "$CONFIG_DIR"
 
 # Get a preference value for a given key in config.
 get_pref() {
-  key="$1"
+  key="$2"
   grep "^${key}=" "$CONFIG_FILE" | cut -d= -f2- || echo ""
 }
 
 # Save/overwrite one preference key in config.
 set_pref() {
-  key="$1"
-  value="$2"
+  key="$2"
+  value="$3"
 
   tmp_file="$CONFIG_FILE.tmp"
   if [ -s "$CONFIG_FILE" ]; then
@@ -33,3 +33,11 @@ set_pref() {
   printf "%s=%s\n" "$key" "$value" >> "$tmp_file"
   mv "$tmp_file" "$CONFIG_FILE"
 }
+
+if [ "$1" = "get" ]; then
+  get_pref "$@"
+elif [ "$1" = "set" ]; then
+  set_pref "$@"
+else
+  echo "Usage: $0 get <key> | set <key> <value>"
+fi
