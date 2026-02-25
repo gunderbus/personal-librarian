@@ -13,6 +13,12 @@ mkdir -p "$CONFIG_DIR"
 # Example default preference.
 : "${THEME:=dark}"
 
+# Get a preference value for a given key in config.
+get_pref() {
+  key="$1"
+  grep "^${key}=" "$CONFIG_FILE" | cut -d= -f2- || echo ""
+}
+
 # Save/overwrite one preference key in config.
 set_pref() {
   key="$1"
