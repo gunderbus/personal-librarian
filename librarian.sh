@@ -15,14 +15,14 @@ mkdir -p "$CONFIG_DIR"
 
 # Get a preference value for a given key in config.
 get_pref() {
-  key="$2"
+  key="$1"
   grep "^${key}=" "$CONFIG_FILE" | cut -d= -f2- || echo ""
 }
 
 # Save/overwrite one preference key in config.
 set_pref() {
-  key="$2"
-  value="$3"
+  key="$1"
+  value="$2"
 
   tmp_file="$CONFIG_FILE.tmp"
   if [ -s "$CONFIG_FILE" ]; then
@@ -35,9 +35,22 @@ set_pref() {
 }
 
 if [ "$1" = "get" ]; then
-  get_pref "$@"
+  get_pref "$2"
 elif [ "$1" = "set" ]; then
-  set_pref "$@"
+  set_pref "$2" "$3"
+elif [ "$1" = "library" ]; then
+  folder="$(get_pref folder)"
+  if [ -z "$folder" ]; then
+    echo "No folder set. Use: $0 set folder /path/to/folder"
+    exit 1
+  fi
+
+  if [ ! -d "$folder" ]; then
+    echo "Folder does not exist: $folder"
+    exit 1
+  fi
+
+  find "$folder" -maxdepth 1 -type f | sed 's#.*/##' | sort
 else
-  echo "Usage: $0 get <key> | set <key> <value>"
+  echo "Usage: $0 get <key> | set <key> <value> | library"
 fi
